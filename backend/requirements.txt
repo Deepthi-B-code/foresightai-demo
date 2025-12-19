@@ -1,0 +1,10 @@
+fastapi
+uvicorn
+python-multipart
+sqlmodel
+httpx
+numpy
+pymupdf
+python-docx
+python-dotenv
+sentence-transformers

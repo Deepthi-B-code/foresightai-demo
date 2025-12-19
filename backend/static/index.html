@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Foresight AI – Sign In</title>
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background:
+        radial-gradient(circle at top left, #f59e0b22, transparent 60%),
+        radial-gradient(circle at bottom right, #f9731622, transparent 60%),
+        #020617;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #e5e7eb;
+    }
+    .card {
+      width: 380px;
+      background: linear-gradient(145deg, #020617, #020617, #111827);
+      border-radius: 26px;
+      padding: 26px 26px 22px;
+      box-shadow: 0 26px 70px rgba(0,0,0,0.9);
+      border: 1px solid rgba(250,204,21,0.3);
+      position: relative;
+      overflow: hidden;
+    }
+    .card::before {
+      content: "";
+      position: absolute;
+      inset: -40%;
+      background: conic-gradient(
+        from 180deg,
+        rgba(250,204,21,0.32),
+        transparent,
+        rgba(253,224,71,0.12),
+        transparent
+      );
+      opacity: 0.3;
+      filter: blur(34px);
+      z-index: -1;
+    }
+    h1 {
+      margin: 0;
+      font-size: 1.7rem;
+      background: linear-gradient(135deg, #facc15, #fde68a, #f97316);
+      -webkit-background-clip: text;
+      color: transparent;
+    }
+    p.sub {
+      margin: 6px 0 18px;
+      font-size: 0.9rem;
+      color: #9ca3af;
+    }
+    .tagline {
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.18em;
+      color: #fbbf24;
+      margin-bottom: 8px;
+    }
+    input {
+      width: 100%;
+      padding: 10px 13px;
+      margin-bottom: 10px;
+      border-radius: 999px;
+      border: 1px solid #4b5563;
+      background: #020617;
+      color: #e5e7eb;
+      outline: none;
+      font-size: 0.95rem;
+    }
+    input:focus {
+      border-color: #facc15;
+      box-shadow: 0 0 0 1px rgba(250,204,21,0.4);
+    }
+    .btn-row {
+      display: flex;
+      gap: 8px;
+      margin-top: 4px;
+    }
+    button {
+      flex: 1;
+      padding: 9px 0;
+      border-radius: 999px;
+      border: none;
+      cursor: pointer;
+      font-size: 0.9rem;
+      font-weight: 500;
+      transition: transform 0.12s ease, box-shadow 0.12s ease, background 0.12s ease, opacity 0.12s ease;
+    }
+    button.primary {
+      background: linear-gradient(135deg, #facc15, #fbbf24, #f97316);
+      color: #020617;
+      box-shadow: 0 18px 36px rgba(250,204,21,0.45);
+    }
+    button.secondary {
+      background: transparent;
+      color: #fefce8;
+      border: 1px solid rgba(148,163,184,0.6);
+    }
+    button:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 16px 38px rgba(0,0,0,0.8);
+    }
+    button:active {
+      transform: translateY(0);
+      box-shadow: none;
+      opacity: 0.85;
+    }
+    small {
+      display: block;
+      margin-top: 14px;
+      font-size: 0.75rem;
+      color: #9ca3af;
+    }
+    .logo-orb {
+      position: absolute;
+      top: 14px;
+      right: 18px;
+      width: 40px;
+      height: 40px;
+      border-radius: 999px;
+      background: radial-gradient(circle at 30% 30%, #fef9c3, #facc15, #b45309);
+      box-shadow: 0 0 18px rgba(250,204,21,0.9);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: 18px;
+      color: #111827;
+    }
+  </style>
+  <script>
+    const API = "/api";
+
+    async function signup() {
+      const u = document.getElementById("u").value.trim();
+      const p = document.getElementById("p").value.trim();
+      if (!u || !p) { alert("Enter username & password"); return; }
+      const res = await fetch(API + "/signup", {
+        method: "POST",
+        headers: {"Content-Type":"application/json"},
+        body: JSON.stringify({username:u, password:p})
+      });
+      const data = await res.json();
+      if (res.ok && data.success) {
+        alert("Sign up successful! Now click Login.");
+      } else {
+        alert(data.detail || "Sign up failed");
+      }
+    }
+
+    async function login() {
+      const u = document.getElementById("u").value.trim();
+      const p = document.getElementById("p").value.trim();
+      if (!u || !p) { alert("Enter username & password"); return; }
+      const res = await fetch(API + "/login", {
+        method: "POST",
+        headers: {"Content-Type":"application/json"},
+        body: JSON.stringify({username:u, password:p})
+      });
+      const data = await res.json();
+      if (res.ok && data.success !== false) {
+        localStorage.setItem("if_username", data.username);
+        localStorage.setItem("if_role", data.role);
+        window.location.href = "dashboard.html";
+      } else {
+        alert(data.detail || "Login failed");
+      }
+    }
+  </script>
+</head>
+<body>
+  <div class="card">
+    <div class="logo-orb">F</div>
+    <div class="tagline">FORESIGHT </div>
+    <h1>Welcome back</h1>
+    <p class="sub">KNOWLEDGE IS THE KEY TO SUCCESS</p>
+    <input id="u" placeholder="Username" />
+    <input id="p" placeholder="Password" type="password" />
+    <div class="btn-row">
+      <button class="primary" onclick="login()">Login</button>
+      <button class="secondary" onclick="signup()">Sign up</button>
+    </div>
+  </div>
+</body>
+</html>

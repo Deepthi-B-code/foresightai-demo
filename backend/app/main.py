@@ -17,3 +17,6 @@ app.add_middleware(
 )
 
 app.include_router(router)
+from fastapi.staticfiles import StaticFiles
+
+app.mount("/", StaticFiles(directory="backend/static", html=True), name="frontend")

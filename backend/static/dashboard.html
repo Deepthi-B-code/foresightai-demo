@@ -1,0 +1,786 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Foresight AI</title>
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background:
+        radial-gradient(circle at top left, #facc1522, transparent 55%),
+        radial-gradient(circle at bottom right, #f9731620, transparent 55%),
+        #020617;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      color: #e5e7eb;
+    }
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px 20px;
+      background: rgba(3,7,18,0.98);
+      border-bottom: 1px solid rgba(148,163,184,0.3);
+      backdrop-filter: blur(18px);
+      position: sticky;
+      top: 0;
+      z-index: 10;
+    }
+    .brand-wrap {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .logo-orb {
+      width: 34px;
+      height: 34px;
+      border-radius: 999px;
+      background: radial-gradient(circle at 30% 30%, #fef9c3, #facc15, #b45309);
+      box-shadow: 0 0 18px rgba(250,204,21,0.8);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: 16px;
+      color: #111827;
+    }
+    .title-block {
+      display: flex;
+      flex-direction: column;
+    }
+    .title-main {
+      font-size: 1rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: #fef3c7;
+    }
+    .title-sub {
+      font-size: 0.8rem;
+      color: #9ca3af;
+    }
+    .header-right {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 0.8rem;
+      color: #9ca3af;
+    }
+    .pill {
+      padding: 4px 10px;
+      border-radius: 999px;
+      border: 1px solid rgba(250,204,21,0.5);
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.16em;
+      color: #facc15;
+    }
+    .btn {
+      border-radius: 999px;
+      border: 1px solid transparent;
+      padding: 6px 14px;
+      font-size: 0.8rem;
+      cursor: pointer;
+      font-weight: 500;
+      background: transparent;
+      color: #e5e7eb;
+      transition: transform 0.12s ease, box-shadow 0.12s ease, background 0.12s ease, border-color 0.12s ease;
+    }
+    .btn.ghost {
+      border-color: rgba(148,163,184,0.6);
+      background: rgba(15,23,42,0.9);
+    }
+    .btn:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 12px 30px rgba(0,0,0,0.8);
+    }
+    main {
+      padding: 18px;
+    }
+    .grid4 {
+      display: grid;
+      grid-template-columns: 0.9fr 1.4fr 0.8fr 0.9fr;
+      gap: 18px;
+      max-width: 1900px;
+      margin: 0 auto;
+    }
+    @media (max-width: 1500px) {
+      .grid4 {
+        grid-template-columns: 1fr;
+      }
+    }
+    .card {
+      background: radial-gradient(circle at top left,#0b1120,#020617);
+      border-radius: 22px;
+      padding: 16px 18px;
+      box-shadow: 0 18px 60px rgba(0,0,0,0.9);
+      border: 1px solid rgba(31,41,55,0.9);
+      position: relative;
+      overflow: hidden;
+    }
+    .card::before {
+      content: "";
+      position: absolute;
+      inset: -40%;
+      background: conic-gradient(
+        from 200deg,
+        transparent,
+        rgba(250,204,21,0.18),
+        transparent,
+        rgba(249,115,22,0.14),
+        transparent
+      );
+      opacity: 0.3;
+      filter: blur(40px);
+      z-index: -1;
+    }
+    h2 {
+      margin: 0 0 6px;
+      font-size: 1.02rem;
+      color: #fefce8;
+    }
+    p.small {
+      margin: 0 0 10px;
+      font-size: 0.8rem;
+      color: #9ca3af;
+    }
+    input[type="file"] {
+      margin: 8px 0;
+      font-size: 0.78rem;
+      color: #e5e7eb;
+    }
+    .upload-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-top: 4px;
+    }
+    button.primary {
+      padding: 7px 14px;
+      border-radius: 999px;
+      border: none;
+      cursor: pointer;
+      font-size: 0.8rem;
+      font-weight: 500;
+      background: linear-gradient(135deg,#facc15,#f97316);
+      color: #020617;
+      box-shadow: 0 12px 28px rgba(250,204,21,0.45);
+      transition: transform 0.12s ease, box-shadow 0.12s ease, opacity 0.12s ease;
+    }
+    button.primary:disabled {
+      opacity: 0.6;
+      box-shadow: none;
+      cursor: wait;
+    }
+    button.primary:hover:not(:disabled) {
+      transform: translateY(-1px);
+      box-shadow: 0 16px 36px rgba(0,0,0,0.9);
+    }
+    #docList {
+      margin-top: 10px;
+      max-height: 220px;
+      overflow-y: auto;
+      font-size: 0.8rem;
+    }
+    .doc-item {
+      padding: 7px 9px;
+      border-radius: 12px;
+      background: rgba(15,23,42,0.96);
+      border: 1px solid rgba(55,65,81,0.9);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 7px;
+    }
+    .doc-name {
+      font-weight: 500;
+      color: #fef9c3;
+    }
+    .doc-meta {
+      font-size: 0.75rem;
+      color: #9ca3af;
+    }
+    .doc-actions button {
+      margin-left: 4px;
+      padding: 4px 9px;
+      border-radius: 999px;
+      border: 1px solid rgba(55,65,81,1);
+      background: #020617;
+      color: #e5e7eb;
+      font-size: 0.7rem;
+      cursor: pointer;
+    }
+    .doc-actions button:hover {
+      border-color: #facc15;
+      color: #facc15;
+    }
+    .templates {
+      margin-top: 14px;
+    }
+    .templates-title {
+      font-size: 0.82rem;
+      color: #e5e7eb;
+      margin-bottom: 6px;
+    }
+    .template-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+    .template-chip {
+      padding: 4px 10px;
+      border-radius: 999px;
+      border: 1px solid rgba(148,163,184,0.7);
+      font-size: 0.72rem;
+      cursor: pointer;
+      background: rgba(15,23,42,0.9);
+      color: #e5e7eb;
+      transition: background 0.12s ease, border-color 0.12s ease, color 0.12s ease;
+    }
+    .template-chip.active {
+      border-color: #facc15;
+      background: linear-gradient(135deg,#facc1515,#f9731610);
+      color: #fefce8;
+    }
+    /* Chat side */
+    .chat-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      margin-bottom: 8px;
+    }
+    .chat-title {
+      font-size: 1.02rem;
+      color: #fefce8;
+    }
+    .chat-mode-pill {
+      font-size: 0.72rem;
+      padding: 3px 9px;
+      border-radius: 999px;
+      border: 1px solid rgba(148,163,184,0.6);
+      color: #e5e7eb;
+    }
+    .chat-window {
+      display: flex;
+      flex-direction: column;
+      height: 430px;
+    }
+    .messages {
+      flex: 1;
+      overflow-y: auto;
+      padding: 9px;
+      margin-bottom: 8px;
+      border-radius: 16px;
+      background: radial-gradient(circle at top left,#020617,#020617,#020617);
+      border: 1px solid rgba(31,41,55,0.9);
+      font-size: 0.88rem;
+    }
+    .msg {
+      margin-bottom: 10px;
+      padding: 8px 10px;
+      border-radius: 12px;
+      max-width: 85%;
+      line-height: 1.35;
+    }
+    .msg.user {
+      background: linear-gradient(135deg,#f97316aa,#facc15aa);
+      margin-left: auto;
+      color: #111827;
+      font-weight: 500;
+    }
+    .msg.bot {
+      background: rgba(10,16,30,0.98);
+      border: 1px solid rgba(51,65,85,1);
+    }
+    .msg-label {
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: #9ca3af;
+      margin-bottom: 3px;
+    }
+    .input-row {
+      display: flex;
+      margin-top: 4px;
+      gap: 8px;
+    }
+    .input-row input {
+      flex: 1;
+      padding: 9px 11px;
+      border-radius: 999px;
+      border: 1px solid #4b5563;
+      background: #020617;
+      color: #e5e7eb;
+      font-size: 0.88rem;
+    }
+    .input-row input:focus {
+      outline: none;
+      border-color: #facc15;
+      box-shadow: 0 0 0 1px rgba(250,204,21,0.4);
+    }
+    .input-row button {
+      padding: 8px 16px;
+      border-radius: 999px;
+      border: none;
+      background: linear-gradient(135deg,#38bdf8,#6366f1);
+      color: white;
+      cursor: pointer;
+      font-size: 0.85rem;
+      font-weight: 500;
+    }
+    .input-row button:disabled {
+      opacity: 0.6;
+      cursor: wait;
+    }
+    .citations {
+      margin-top: 6px;
+      font-size: 0.74rem;
+      color: #9ca3af;
+      max-height: 110px;
+      overflow-y: auto;
+    }
+    .badge {
+      display: inline-block;
+      padding: 3px 7px;
+      border-radius: 999px;
+      background: #020617;
+      border: 1px solid #374151;
+      margin-right: 4px;
+      margin-bottom: 2px;
+    }
+    /* spinner */
+    .spinner {
+      width: 22px;
+      height: 22px;
+      border: 3px solid rgba(250,204,21,0.2);
+      border-top: 3px solid #facc15;
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+      margin: 10px auto;
+    }
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+    /* Upload queue */
+    .queue-item {
+      padding: 6px 8px;
+      margin-bottom: 4px;
+      border-radius: 10px;
+      background: rgba(15,23,42,0.9);
+      border: 1px solid rgba(55,65,81,0.9);
+    }
+    .queue-item.done {
+      border-color: #4ade80;
+      color: #4ade80;
+    }
+    .queue-item.error {
+      border-color: #f87171;
+      color: #f87171;
+    }
+    .queue-item.processing {
+      border-color: #facc15;
+      color: #facc15;
+    }
+    /* Sources & pinned */
+    .source-item {
+      background: rgba(10,16,30,0.96);
+      border: 1px solid rgba(55,65,81,0.9);
+      padding: 8px 10px;
+      border-radius: 12px;
+      margin-bottom: 10px;
+    }
+    .source-doc-title {
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: #fcd34d;
+    }
+    .source-doc-meta {
+      font-size: 0.75rem;
+      color: #9ca3af;
+      margin-bottom: 6px;
+    }
+    .source-preview {
+      font-size: 0.78rem;
+      color: #e5e7eb;
+      opacity: 0.9;
+    }
+    .pin-btn {
+      font-size: 0.72rem;
+      padding: 3px 8px;
+      border-radius: 999px;
+      border: 1px solid #facc15;
+      background: #020617;
+      color: #facc15;
+      cursor: pointer;
+      margin-top: 4px;
+      transition: background 0.15s ease, color 0.15s ease;
+    }
+    .pin-btn:hover {
+      background: #facc15;
+      color: #020617;
+    }
+    .pinned-card {
+      background: rgba(10,16,30,0.96);
+      border: 1px solid rgba(250,204,21,0.5);
+      padding: 8px 12px;
+      margin-bottom: 12px;
+      border-radius: 14px;
+      font-size: 0.78rem;
+    }
+  </style>
+  <script>
+    const API = "http://127.0.0.1:8000/api";
+    let messages = [];
+    let pinned = [];
+    let currentTemplate = "summary";
+    let uploadQueue = [];
+    let uploading = false;
+
+    function logout() {
+      localStorage.removeItem("if_username");
+      localStorage.removeItem("if_role");
+      window.location.href = "index.html";
+    }
+
+    function setTemplate(t) {
+      currentTemplate = t;
+      document.querySelectorAll(".template-chip").forEach(chip => {
+        chip.classList.toggle("active", chip.dataset.template === t);
+      });
+      const modeText = {
+        summary: "Summary mode",
+        quiz: "Quiz mode",
+        qa: "Q&A mode",
+        compliance: "Compliance mode"
+      }[t] || "Q&A mode";
+      document.getElementById("chatModePill").textContent = modeText;
+      document.getElementById("chatTitle").textContent = ({
+        summary: "Smart Summary",
+        quiz: "Quiz Generator",
+        qa: "Ask Foresight AI",
+        compliance: "Compliance Checker"
+      }[t] || "Ask Foresight AI");
+    }
+
+    async function refreshDocs() {
+      const res = await fetch(API + "/docs");
+      const data = await res.json();
+      const container = document.getElementById("docList");
+      container.innerHTML = "";
+      (data.documents || []).forEach(doc => {
+        const div = document.createElement("div");
+        div.className = "doc-item";
+        div.innerHTML = `
+          <div>
+            <div class="doc-name">${doc.name}</div>
+            <div class="doc-meta">${doc.chunks} chunks indexed • ID ${doc.id}</div>
+          </div>
+          <div class="doc-actions">
+            <button onclick="summaryDoc(${doc.id})">Summary</button>
+            <button onclick="quizDoc(${doc.id})">Quiz</button>
+            <button onclick="deleteDoc(${doc.id})">Delete</button>
+          </div>
+        `;
+        container.appendChild(div);
+      });
+    }
+
+    function renderQueue() {
+      const box = document.getElementById("uploadQueue");
+      box.innerHTML = "";
+      uploadQueue.forEach((file, index) => {
+        const div = document.createElement("div");
+        div.className = "queue-item";
+        div.id = "queue-item-" + index;
+        div.textContent = file.name + " — pending";
+        box.appendChild(div);
+      });
+    }
+
+    async function processNextFile() {
+      if (uploading) return;
+      if (uploadQueue.length === 0) return;
+
+      uploading = true;
+      const file = uploadQueue[0];
+      const index = 0;
+
+      const item = document.getElementById("queue-item-" + index);
+      if (item) {
+        item.classList.add("processing");
+        item.textContent = `${file.name} — uploading...`;
+      }
+
+      const fd = new FormData();
+      fd.append("file", file);
+
+      try {
+        const res = await fetch(API + "/upload", { method: "POST", body: fd });
+        const data = await res.json();
+
+        if (!res.ok) {
+          if (item) {
+            item.classList.remove("processing");
+            item.classList.add("error");
+            item.textContent = `${file.name} — ERROR: ${data.detail}`;
+          }
+        } else {
+          if (item) {
+            item.classList.remove("processing");
+            item.classList.add("done");
+            item.textContent = `${file.name} — done ✔`;
+          }
+          await refreshDocs();
+        }
+      } catch (e) {
+        if (item) {
+          item.classList.remove("processing");
+          item.classList.add("error");
+          item.textContent = `${file.name} — network error`;
+        }
+      }
+
+      uploadQueue.shift();
+      uploading = false;
+      if (uploadQueue.length > 0) processNextFile();
+    }
+
+    function startUploadQueue() {
+      const input = document.getElementById("files");
+      if (!input.files.length) {
+        alert("Select at least one file.");
+        return;
+      }
+      uploadQueue = Array.from(input.files);
+      renderQueue();
+      processNextFile();
+    }
+
+    async function deleteDoc(id) {
+      if (!confirm("Delete this document and its chunks?")) return;
+      const res = await fetch(API + "/docs/" + id, { method: "DELETE" });
+      if (res.ok) {
+        await refreshDocs();
+      } else {
+        alert("Failed to delete document");
+      }
+    }
+
+    async function summaryDoc(id) {
+      const res = await fetch(API + `/docs/${id}/summary`);
+      const data = await res.json();
+      addMessage("bot", "Document summary:\n" + (data.summary || JSON.stringify(data)));
+    }
+
+    async function quizDoc(id) {
+      const res = await fetch(API + `/docs/${id}/quiz`);
+      const data = await res.json();
+      addMessage("bot", "Quiz generated from document:\n" + (data.quiz || JSON.stringify(data)));
+    }
+
+    function renderMessages() {
+      const box = document.getElementById("messages");
+      box.innerHTML = "";
+      messages.forEach((m, idx) => {
+        const div = document.createElement("div");
+        div.className = "msg " + m.role;
+        if (m.role === "bot") {
+          div.innerHTML =
+            `<div class="msg-label">Foresight AI</div>` +
+            `<div>${m.text.replace(/\n/g,"<br>")}</div>` +
+            `<button class="pin-btn" onclick="pinInsight(${idx})">Pin</button>`;
+        } else {
+          div.innerHTML =
+            `<div class="msg-label">You</div>` +
+            `<div>${m.text.replace(/\n/g,"<br>")}</div>`;
+        }
+        box.appendChild(div);
+      });
+      box.scrollTop = box.scrollHeight;
+    }
+
+    function addMessage(role, text) {
+      messages.push({ role, text });
+      if (messages.length > 60) messages.shift();
+      renderMessages();
+    }
+
+    function pinInsight(index) {
+      const msg = messages[index];
+      if (!msg || msg.role !== "bot") return;
+      pinned.push(msg);
+      renderPinned();
+    }
+
+    function renderPinned() {
+      const box = document.getElementById("pinnedList");
+      box.innerHTML = "";
+      pinned.forEach(p => {
+        const div = document.createElement("div");
+        div.className = "pinned-card";
+        div.innerHTML = p.text.replace(/\n/g,"<br>");
+        box.appendChild(div);
+      });
+    }
+
+    function buildTemplatePrompt(question) {
+      if (currentTemplate === "summary") {
+        return `/summary ${question}`;
+      } else if (currentTemplate === "quiz") {
+        return `/quiz ${question}`;
+      } else if (currentTemplate === "compliance") {
+        return `/compliance ${question}`;
+      }
+      return question;
+    }
+
+    async function ask() {
+      const input = document.getElementById("question");
+      const raw = input.value.trim();
+      if (!raw) { alert("Enter a question."); return; }
+      const q = buildTemplatePrompt(raw);
+      addMessage("user", q);
+      input.value = "";
+      const btn = document.getElementById("askBtn");
+      btn.disabled = true;
+      btn.textContent = "Thinking...";
+      document.getElementById("spinnerContainer").style.display = "block";
+      document.getElementById("citations").innerHTML = "";
+      try {
+        const res = await fetch(API + "/ask", {
+          method: "POST",
+          headers: {"Content-Type":"application/json"},
+          body: JSON.stringify({ question: q })
+        });
+        const data = await res.json();
+        if (!res.ok) {
+          addMessage("bot", data.detail || "Error from server.");
+        } else {
+          addMessage("bot", data.answer || "(No answer)");
+          const cBox = document.getElementById("citations");
+          cBox.innerHTML = "";
+          const side = document.getElementById("sourceDocsList");
+          side.innerHTML = "";
+          if (data.citations && data.citations.length) {
+            data.citations.forEach(c => {
+              const span = document.createElement("div");
+              span.className = "badge";
+              span.textContent = `Doc ${c.document_id} • score ${c.score.toFixed(2)}`;
+              cBox.appendChild(span);
+
+              const div = document.createElement("div");
+              div.className = "source-item";
+              div.innerHTML = `
+                <div class="source-doc-title">Document ID: ${c.document_id}</div>
+                <div class="source-doc-meta">Relevance Score: ${c.score.toFixed(3)}</div>
+                <div class="source-preview">"${c.preview}"</div>
+              `;
+              side.appendChild(div);
+            });
+          } else {
+            cBox.textContent = "No document citations used.";
+            side.innerHTML = `<div style="font-size:0.8rem; color:#64748b;">No citations yet.</div>`;
+          }
+        }
+      } catch (e) {
+        addMessage("bot", "Network error: " + e);
+      } finally {
+        btn.disabled = false;
+        btn.textContent = "Ask Foresight AI";
+        document.getElementById("spinnerContainer").style.display = "none";
+      }
+    }
+
+    window.addEventListener("load", () => {
+      const u = localStorage.getItem("if_username") || "Guest";
+      const role = localStorage.getItem("if_role") || "user";
+      document.getElementById("userLabel").textContent = u + " (" + role + ")";
+      setTemplate("summary");
+      refreshDocs();
+    });
+  </script>
+</head>
+<body>
+  <header>
+    <div class="brand-wrap">
+      <div class="logo-orb">F</div>
+      <div class="title-block">
+        <span class="title-main">FORESIGHT AI</span>
+        <span class="title-sub">For the better you</span>
+      </div>
+    </div>
+    <div class="header-right">
+      <span id="userLabel"></span>
+      <span class="pill">Knowledge</span>
+      <button class="btn ghost" onclick="logout()">Logout</button>
+    </div>
+  </header>
+
+  <main>
+    <div class="grid4">
+      <!-- Left panel -->
+      <div class="card">
+        <h2>1. Documents & Templates</h2>
+        <p class="small">
+          Upload PDFs, DOCX or TXT. Then choose a template: summaries, quizzes, Q&amp;A or compliance checks.
+        </p>
+        <div class="upload-row">
+          <input type="file" id="files" multiple />
+          <button class="primary" id="uploadBtn" onclick="startUploadQueue()">Upload Selected Files</button>
+        </div>
+        <div id="uploadQueue" style="margin-top:10px; font-size:0.8rem; color:#9ca3af;"></div>
+        <div id="docList"></div>
+
+        <div class="templates">
+          <div class="templates-title">Templates</div>
+          <div class="template-row">
+            <div class="template-chip active" data-template="summary" onclick="setTemplate('summary')">Smart Summary</div>
+            <div class="template-chip" data-template="quiz" onclick="setTemplate('quiz')">Quiz Generator</div>
+            <div class="template-chip" data-template="qa" onclick="setTemplate('qa')">Ask Anything</div>
+            <div class="template-chip" data-template="compliance" onclick="setTemplate('compliance')">Compliance Checker</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Chat panel -->
+      <div class="card">
+        <div class="chat-header">
+          <div class="chat-title" id="chatTitle">Smart Summary</div>
+          <div class="chat-mode-pill" id="chatModePill">Summary mode</div>
+        </div>
+        <p class="small">
+          Ask questions grounded in your documents. Foresight responds in a structured, explainable way with citations.
+        </p>
+        <div class="chat-window">
+          <div class="messages" id="messages"></div>
+          <div id="spinnerContainer" style="text-align:center; display:none;">
+            <div class="spinner"></div>
+            <div style="font-size:0.75rem; color:#facc15; margin-top:4px;">Thinking...</div>
+          </div>
+          <div class="input-row">
+            <input id="question" placeholder="Ask about policies, generate quizzes, or check compliance..." />
+            <button id="askBtn" onclick="ask()">Ask Foresight AI</button>
+          </div>
+          <div class="citations" id="citations"></div>
+        </div>
+      </div>
+
+      <!-- Source documents sidebar -->
+      <div class="card" id="sourcesCard">
+        <h2>Source Documents</h2>
+        <p class="small">Chunks used by Foresight for the last answer</p>
+        <div id="sourceDocsList">
+          <div style="font-size:0.8rem; color:#64748b;">No citations yet.</div>
+        </div>
+      </div>
+
+      <!-- Pinned insights -->
+      <div class="card" id="pinnedCard">
+        <h2>Pinned Insights</h2>
+        <p class="small">Important answers you've pinned</p>
+        <div id="pinnedList"></div>
+      </div>
+    </div>
+  </main>
+</body>
+</html>
